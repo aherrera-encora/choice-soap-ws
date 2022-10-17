@@ -13,25 +13,39 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.time.ZonedDateTime;
-import java.util.Objects;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Builder
 @Entity
-@Table(name = "hotel_ratings")
-public class HotelRatingEntity {
+@Table(name = "hotels")
+public class Hotel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    @Column(name = "rating_id")
-    private long ratingId;
-    @Basic
     @Column(name = "hotel_id")
-    private Long hotelId;
+    private long hotelId;
     @Basic
-    @Column(name = "score")
-    private Integer score;
+    @Column(name = "country")
+    private String country;
+    @Basic
+    @Column(name = "state")
+    private String state;
+    @Basic
+    @Column(name = "city")
+    private String city;
+    @Basic
+    @Column(name = "zip_code")
+    private String zipCode;
+    @Basic
+    @Column(name = "address1")
+    private String address1;
+    @Basic
+    @Column(name = "address2")
+    private String address2;
+    @Basic
+    @Column(name = "address3")
+    private String address3;
     @Basic
     @Column(name = "created_at")
     private ZonedDateTime createdAt;

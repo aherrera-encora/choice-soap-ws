@@ -10,13 +10,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.io.Serializable;
-import java.util.Objects;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Builder
-public class HotelAmenityEntityPK implements Serializable {
+public class HotelAmenityPK implements Serializable {
     @Column(name = "hotel_id")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

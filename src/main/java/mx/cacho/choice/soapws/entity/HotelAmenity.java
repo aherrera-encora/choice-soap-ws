@@ -12,7 +12,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.Table;
-import java.util.Objects;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,8 +19,8 @@ import java.util.Objects;
 @Builder
 @Entity
 @Table(name = "hotel_amenities")
-@IdClass(HotelAmenityEntityPK.class)
-public class HotelAmenityEntity {
+@IdClass(HotelAmenityPK.class)
+public class HotelAmenity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "hotel_id")

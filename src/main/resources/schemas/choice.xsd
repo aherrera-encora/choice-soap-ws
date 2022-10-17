@@ -55,6 +55,7 @@
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="name" type="xs:string"/>
+                <xs:element name="description" type="xs:string" minOccurs="0"/>
                 <xs:element name="country" type="xs:string"/>
                 <xs:element name="state" type="xs:string"/>
                 <xs:element name="city" type="xs:string"/>
@@ -129,7 +130,7 @@
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="name" type="xs:string"/>
-                <!-- <xs:element name="description" type="xs:string"/> -->
+                <xs:element name="description" type="xs:string"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
@@ -217,9 +218,9 @@
     <!-- Models -->
     <xs:complexType name="hotelInfo">
         <xs:sequence>
-            <xs:element name="id" type="xs:long"/>
+            <xs:element name="hotelId" type="xs:long"/>
             <xs:element name="name" type="xs:string"/>
-            <!-- <xs:element name="description" type="xs:string"/> -->
+            <xs:element name="description" type="xs:string"/>
             <xs:element name="country" type="xs:string"/>
             <xs:element name="state" type="xs:string"/>
             <xs:element name="city" type="xs:string"/>
@@ -236,9 +237,9 @@
 
     <xs:complexType name="amenityInfo">
         <xs:sequence>
-            <xs:element name="id" type="xs:long"/>
+            <xs:element name="amenityId" type="xs:long"/>
             <xs:element name="name" type="xs:string"/>
-            <!-- <xs:element name="description" type="xs:string"/> -->
+            <xs:element name="description" type="xs:string"/>
         </xs:sequence>
     </xs:complexType>
 

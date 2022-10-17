@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS hotels (
     --country_code VARCHAR(3) NOT NULL,
     state VARCHAR(50) NOT NULL,
     city VARCHAR(50) NOT NULL,
-    zipcode VARCHAR(10) NOT NULL,
+    zip_code VARCHAR(10) NOT NULL,
     address1 VARCHAR(100) NOT NULL,
     address2 VARCHAR(100),
     address3 VARCHAR(100),
