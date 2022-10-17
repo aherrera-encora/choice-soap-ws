@@ -38,6 +38,9 @@ public class Hotel {
     @Column(name = "zip_code")
     private String zipCode;
     @Basic
+    @Column(name = "name")
+    private String name;
+    @Basic
     @Column(name = "address1")
     private String address1;
     @Basic

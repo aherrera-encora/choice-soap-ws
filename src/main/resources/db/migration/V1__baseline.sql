@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS hotels (
     state VARCHAR(50) NOT NULL,
     city VARCHAR(50) NOT NULL,
     zip_code VARCHAR(10) NOT NULL,
+    name VARCHAR(200) NOT NULL,
     address1 VARCHAR(100) NOT NULL,
     address2 VARCHAR(100),
     address3 VARCHAR(100),

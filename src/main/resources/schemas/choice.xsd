@@ -214,7 +214,7 @@
             </xs:sequence>
         </xs:complexType>
     </xs:element>
-    
+
     <!-- Models -->
     <xs:complexType name="hotelInfo">
         <xs:sequence>
