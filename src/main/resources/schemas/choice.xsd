@@ -3,11 +3,11 @@
 
     <!-- Services -->
     <!-- Fetches all Hotels. TODO: Pagination-->
-    <xs:element name="listHotelsRequest">
+    <xs:element name="getAllHotelsRequest">
         <xs:complexType/>
     </xs:element>
 
-    <xs:element name="listHotelsResponse">
+    <xs:element name="getAllHotelsResponse">
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="hotel" type="tns:hotelInfo" maxOccurs="unbounded"/>
@@ -16,7 +16,7 @@
     </xs:element>
 
     <!-- Searches Hotels by name -->
-    <xs:element name="findHotelsRequest">
+    <xs:element name="findHotelsByNameRequest">
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="name" type="xs:string"/>
@@ -24,7 +24,7 @@
         </xs:complexType>
     </xs:element>
 
-    <xs:element name="findHotelsResponse">
+    <xs:element name="findHotelsByNameResponse">
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="hotel" type="tns:hotelInfo" maxOccurs="unbounded"/>
@@ -112,11 +112,11 @@
     </xs:element>
 
     <!-- Fetches all Amenities. TODO: Pagination-->
-    <xs:element name="listAmenitiesRequest">
+    <xs:element name="getAllAmenitiesRequest">
         <xs:complexType/>
     </xs:element>
 
-    <xs:element name="listAmenitiesResponse">
+    <xs:element name="getAllAmenitiesResponse">
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="amenity" type="tns:amenityInfo" maxOccurs="unbounded"/>
@@ -180,7 +180,7 @@
     </xs:element>
 
     <!-- Adds a rating to a Hotel -->
-    <xs:element name="rateHotelRequest">
+    <xs:element name="addHotelRatingRequest">
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="hotelId" type="xs:long"/>
@@ -189,7 +189,7 @@
         </xs:complexType>
     </xs:element>
 
-    <xs:element name="rateHotelResponse">
+    <xs:element name="addHotelRatingResponse">
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="status" type="tns:statusInfo"/>
@@ -198,7 +198,7 @@
     </xs:element>
 
     <!-- Delete rating-->
-    <xs:element name="removeRatingRequest">
+    <xs:element name="deleteHotelRatingRequest">
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="ratingId" type="xs:long"/>
@@ -206,7 +206,7 @@
         </xs:complexType>
     </xs:element>
 
-    <xs:element name="removeRatingResponse">
+    <xs:element name="deleteHotelRatingResponse">
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="status" type="tns:statusInfo"/>
