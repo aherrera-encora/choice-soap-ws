@@ -90,6 +90,7 @@
                     <sources>
                         <source>${project.basedir}/src/main/resources/schemas/choice.xsd</source>
                     </sources>
+                    <packageName>mx.cacho.choice.soapws.schema</packageName>
                 </configuration>
             </plugin>
         </plugins>
