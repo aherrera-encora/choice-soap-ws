@@ -1,0 +1,5 @@
+spring:
+  main:
+    banner-mode: "off"
+  data:
+    jpa.repositories.enabled: true
