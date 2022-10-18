@@ -2,8 +2,9 @@ package mx.cacho.choice.soapws.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -11,12 +12,15 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
-import java.time.ZonedDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 @Builder
 @Entity
 @Table(name = "amenities")
@@ -25,16 +29,15 @@ public class Amenity {
     @Id
     @Column(name = "amenity_id")
     private long amenityId;
+
     @Basic
     @Column(name = "name")
     private String name;
+
     @Basic
     @Column(name = "description")
     private String description;
-    @Basic
-    @Column(name = "created_at")
-    private ZonedDateTime createdAt;
-    @Basic
-    @Column(name = "updated_at")
-    private ZonedDateTime updatedAt;
+
+    @ManyToMany(mappedBy = "amenities")
+    private Set<Hotel> hotels = new HashSet<>();
 }
