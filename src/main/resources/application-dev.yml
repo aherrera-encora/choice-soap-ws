@@ -6,3 +6,4 @@ spring:
     password: postgres
   jpa:
     show-sql: true
+debug: true
