@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -29,6 +30,7 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 @Builder
+@ToString
 @Entity
 @Table(name = "hotels")
 public class Hotel {
@@ -60,9 +62,6 @@ public class Hotel {
     @Basic
     @Column(name = "rating")
     private BigDecimal rating;
-
-    //@ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    //@ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST})
     @JoinTable(name = "hotel_amenities", joinColumns = {@JoinColumn(name = "hotel_id")}, inverseJoinColumns = {@JoinColumn(name = "amenity_id")})
     private Set<Amenity> amenities = new HashSet<>();
@@ -72,17 +71,15 @@ public class Hotel {
             this.amenities = new HashSet<>();
         }
         this.amenities.addAll(amenities);
-        //amenities.forEach(a -> a.getHotels().add(this));
     }
 
     public void removeAmenities(Collection<Long> amenityIds) {
-        if(this.amenities == null){
-            this.amenities = new HashSet<>();
+        if(this.amenities == null || this.amenities.isEmpty()){
+            return;
         }
         Set<Amenity> amenitiesToRemove = this.amenities.stream().filter(a -> amenityIds.contains(a.getAmenityId())).collect(Collectors.toSet());
         if (!amenities.isEmpty()) {
             this.amenities.removeAll(amenitiesToRemove);
-            //amenities.forEach(a -> a.getHotels().remove(this));
         }
     }
 }

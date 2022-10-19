@@ -1,18 +1,19 @@
 package mx.cacho.choice.soapws.service;
 
+import lombok.extern.slf4j.Slf4j;
 import mx.cacho.choice.soapws.entity.Amenity;
 import mx.cacho.choice.soapws.entity.Hotel;
 import mx.cacho.choice.soapws.repository.AmenityRepository;
 import mx.cacho.choice.soapws.repository.HotelRepository;
+import mx.cacho.choice.soapws.service.exception.IllegalServiceOperationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
+@Slf4j
 @Service
 public class HotelServiceImpl implements HotelService {
 
@@ -46,13 +47,12 @@ public class HotelServiceImpl implements HotelService {
     }
 
     @Override
-    public boolean createHotel(Hotel hotel) {
-        if (hotelRepository.existsById(hotel.getHotelId())) {
-            return false;
-        } else {
-            hotelRepository.save(hotel);
-            return true;
+    public Hotel createHotel(Hotel hotel) {
+        if (hotel.getHotelId() != 0) {
+            log.warn("Attempted to create a hotel with id: {}.", hotel);
+            throw new IllegalServiceOperationException("Unable to create hotel with pre-populated id.");
         }
+        return hotelRepository.save(hotel);
     }
 
     @Override
@@ -61,25 +61,38 @@ public class HotelServiceImpl implements HotelService {
     }
 
     @Override
-    public void updateHotel(Hotel hotel) {
-        if(hotelRepository.existsById(hotel.getHotelId())){
-            hotelRepository.save(hotel); //TODO: Fix logic. Error handling
+    public Hotel updateHotel(Hotel hotel) {
+        if (hotelRepository.existsById(hotel.getHotelId())) {
+            return hotelRepository.save(hotel);
+        } else {
+            log.warn("Attempted to update hotel with non-existing id: {}.", hotel);
+            throw new IllegalServiceOperationException("Unable to update hotel for non-existing id.");
         }
     }
 
     @Override
-    public Optional<Hotel> addAmenitiesToHotel(Long hotelId, Collection<Amenity> amenities) {
-        return hotelRepository.findById(hotelId).map(h -> {
-            h.addAmenities(amenities);
-            return hotelRepository.save(h);
-        });
+    public Hotel addAmenitiesToHotel(Long hotelId, Collection<Amenity> amenities) {
+        Optional<Hotel> hotelOptional = hotelRepository.findById(hotelId);
+        if (hotelOptional.isEmpty()) {
+            log.warn("Attempted to add amenities to non-existing hotel id: {}.", hotelId);
+            throw new IllegalServiceOperationException("Unable to add amenities to non-existing hotel id.");
+        }
+
+        Hotel hotel = hotelOptional.get();
+        hotel.addAmenities(amenities);
+        return hotelRepository.save(hotel);
     }
 
     @Override
-    public Optional<Hotel> removeAmenitiesFromHotel(Long hotelId, Collection<Long> amenityIds) {
-        return hotelRepository.findById(hotelId).map(h -> {
-            h.removeAmenities(amenityIds);
-            return hotelRepository.save(h);
-        });
+    public Hotel removeAmenitiesFromHotel(Long hotelId, Collection<Long> amenityIds) {
+        Optional<Hotel> hotelOptional = hotelRepository.findById(hotelId);
+
+        if (hotelOptional.isEmpty()) {
+            log.warn("Attempted to remove amenities from non-existing hotel id: {}.", hotelId);
+            throw new IllegalServiceOperationException("Unable to remove amenities from non-existing hotel id.");
+        }
+        Hotel hotel = hotelOptional.get();
+        hotel.removeAmenities(amenityIds);
+        return hotelRepository.save(hotel);
     }
 }

@@ -17,13 +17,13 @@ public interface HotelService {
 
     List<Hotel> getHotelsByName(String namePattern);
 
-    boolean createHotel(Hotel hotel);
+    Hotel createHotel(Hotel hotel);
 
     void deleteHotel(Long hotelId);
 
-    void updateHotel(Hotel hotel);
+    Hotel updateHotel(Hotel hotel);
 
-    Optional<Hotel> addAmenitiesToHotel(Long hotelId, Collection<Amenity> amenities);
+    Hotel addAmenitiesToHotel(Long hotelId, Collection<Amenity> amenities);
 
-    Optional<Hotel> removeAmenitiesFromHotel(Long hotelId, Collection<Long> amenityIds);
+    Hotel removeAmenitiesFromHotel(Long hotelId, Collection<Long> amenityIds);
 }

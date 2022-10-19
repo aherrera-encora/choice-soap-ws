@@ -1,7 +1,6 @@
 package mx.cacho.choice.soapws.service;
 
 import mx.cacho.choice.soapws.entity.Amenity;
-import mx.cacho.choice.soapws.entity.Hotel;
 
 import java.util.Collection;
 import java.util.List;
@@ -15,5 +14,5 @@ public interface AmenityService {
 
     public List<Amenity> getAllAmenities();
 
-    boolean createAmenity(Amenity amenity);
+    Amenity createAmenity(Amenity amenity);
 }

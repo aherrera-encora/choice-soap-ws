@@ -5,10 +5,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -22,6 +24,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Builder
+@ToString
 @Entity
 @Table(name = "amenities")
 public class Amenity {
@@ -38,6 +41,6 @@ public class Amenity {
     @Column(name = "description")
     private String description;
 
-    @ManyToMany(mappedBy = "amenities")
+    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "amenities")
     private Set<Hotel> hotels = new HashSet<>();
 }

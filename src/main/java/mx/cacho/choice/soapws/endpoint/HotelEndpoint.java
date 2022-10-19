@@ -1,10 +1,15 @@
 package mx.cacho.choice.soapws.endpoint;
 
+import lombok.extern.slf4j.Slf4j;
+import mx.cacho.choice.soapws.endpoint.exception.AmenityNotFoundException;
+import mx.cacho.choice.soapws.endpoint.exception.HotelNotFoundException;
+import mx.cacho.choice.soapws.endpoint.exception.SenderException;
 import mx.cacho.choice.soapws.entity.Amenity;
 import mx.cacho.choice.soapws.entity.Hotel;
 import mx.cacho.choice.soapws.schema.AddAmenitiesToHotelRequest;
 import mx.cacho.choice.soapws.schema.CreateHotelRequest;
 import mx.cacho.choice.soapws.schema.DeleteHotelRequest;
+import mx.cacho.choice.soapws.schema.GetAmenityResponse;
 import mx.cacho.choice.soapws.schema.GetHotelRequest;
 import mx.cacho.choice.soapws.schema.GetHotelResponse;
 import mx.cacho.choice.soapws.schema.GetHotelsByNameRequest;
@@ -14,6 +19,7 @@ import mx.cacho.choice.soapws.schema.RemoveAmenitiesFromHotelRequest;
 import mx.cacho.choice.soapws.schema.UpdateHotelRequest;
 import mx.cacho.choice.soapws.service.AmenityService;
 import mx.cacho.choice.soapws.service.HotelService;
+import mx.cacho.choice.soapws.util.HotelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
@@ -24,8 +30,10 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 import java.util.HashSet;
 import java.util.List;
 
+import static mx.cacho.choice.soapws.util.AmenityMapper.toAmenityInfo;
 import static mx.cacho.choice.soapws.util.HotelMapper.toHotelInfo;
 
+@Slf4j
 @Endpoint
 public class HotelEndpoint {
 
@@ -42,22 +50,24 @@ public class HotelEndpoint {
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "getHotelRequest")
     @ResponsePayload
     public GetHotelResponse getHotel(@RequestPayload GetHotelRequest request) {
-        return hotelService.getHotel(request.getId())
-                .map(h -> {
-                    GetHotelResponse response = new GetHotelResponse();
-                    response.setHotel(toHotelInfo().apply(h));
-                    return response;
-                }).orElse(null); //TODO
+        Long hotelId = request.getId();
+        Hotel hotel = hotelService.getHotel(hotelId).orElseThrow(() -> new HotelNotFoundException(String.format("Hotel not found: %s", hotelId)));
+
+        GetHotelResponse response = new GetHotelResponse();
+        response.setHotel(toHotelInfo(hotel));
+        log.debug("Returning hotel: {}", hotel);
+        return response;
     }
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "getAllHotelsRequest")
     @ResponsePayload
     public GetHotelsResponse getAllHotels() {
         List<Hotel> hotels = hotelService.getAllHotels();
-        List<HotelInfo> hotelInfoList = hotels.stream().map(toHotelInfo()).toList();
+        List<HotelInfo> hotelInfoList = hotels.stream().map(HotelMapper::toHotelInfo).toList();
 
         GetHotelsResponse response = new GetHotelsResponse();
         response.getHotel().addAll(hotelInfoList);
+        log.debug("Returning hotels #: {}", hotels.size());
         return response;
     }
 
@@ -65,10 +75,11 @@ public class HotelEndpoint {
     @ResponsePayload
     public GetHotelsResponse getHotelsByName(@RequestPayload GetHotelsByNameRequest request) {
         List<Hotel> hotels = hotelService.getHotelsByName(request.getName());
-        List<HotelInfo> hotelInfoList = hotels.stream().map(toHotelInfo()).toList();
+        List<HotelInfo> hotelInfoList = hotels.stream().map(HotelMapper::toHotelInfo).toList();
 
         GetHotelsResponse response = new GetHotelsResponse();
         response.getHotel().addAll(hotelInfoList);
+        log.debug("Returning hotels #: {}", hotels.size());
         return response;
     }
 
@@ -77,12 +88,7 @@ public class HotelEndpoint {
     @Transactional
     public GetHotelResponse createHotel(@RequestPayload CreateHotelRequest request) {
         List<Long> amenityIds = request.getAmenityIds();
-        List<Amenity> amenities = amenityService.getAmenities(amenityIds);
-
-        // Number of passed in amenity ids must match number of fetched amenities.
-        if (amenities.size() != amenityIds.size()) {
-            throw new RuntimeException(); //TODO: Error handling
-        }
+        List<Amenity> amenities = validateAndGetAmenities(amenityIds);
 
         Hotel hotel = Hotel.builder()
                 .name(request.getName())
@@ -96,21 +102,20 @@ public class HotelEndpoint {
                 .amenities(new HashSet<>(amenities))
                 .build();
 
-        GetHotelResponse response = new GetHotelResponse();
-        HotelInfo hotelInfo = null;
-        if(hotelService.createHotel(hotel)) {
-            hotelInfo = toHotelInfo().apply(hotel);
-        }
+        hotel = hotelService.createHotel(hotel);
 
-        response.setHotel(hotelInfo);
+        GetHotelResponse response = new GetHotelResponse();
+        response.setHotel(toHotelInfo(hotel));
+        log.debug("Created hotel: {}", hotel);
         return response;
     }
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "updateHotelRequest")
     @ResponsePayload
     public GetHotelResponse updateHotel(@RequestPayload UpdateHotelRequest request) {
+        List<Long> amenityIds = request.getAmenityIds();
+        List<Amenity> amenities = validateAndGetAmenities(amenityIds);
 
-        //TODO: FIX Add current amenities
         Hotel hotel = Hotel.builder()
                 .hotelId(request.getHotelId())
                 .name(request.getName())
@@ -121,13 +126,14 @@ public class HotelEndpoint {
                 .zipCode(request.getZipCode())
                 .address(request.getAddress())
                 .rating(request.getRating())
+                .amenities(new HashSet<>(amenities))
                 .build();
 
-        hotelService.updateHotel(hotel);
+        hotel = hotelService.updateHotel(hotel);
 
-        HotelInfo hotelInfo = toHotelInfo().apply(hotel);
         GetHotelResponse response = new GetHotelResponse();
-        response.setHotel(hotelInfo);
+        response.setHotel(toHotelInfo(hotel));
+        log.debug("Created hotel: {}", hotel);
         return response;
     }
 
@@ -140,12 +146,38 @@ public class HotelEndpoint {
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "addAmenitiesToHotelRequest")
     @ResponsePayload
     public GetHotelResponse addAmenitiesToHotel(@RequestPayload AddAmenitiesToHotelRequest request) {
-        throw new UnsupportedOperationException("NOT IMPLEMENTED");
+        List<Long> amenityIds = request.getAmenityIds();
+        List<Amenity> amenities = validateAndGetAmenities(amenityIds);
+
+        Long hotelId = request.getHotelId();
+        Hotel hotel = hotelService.addAmenitiesToHotel(hotelId, amenities);
+
+        GetHotelResponse response = new GetHotelResponse();
+        response.setHotel(toHotelInfo(hotel));
+        return response;
     }
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "removeAmenitiesFromHotelRequest")
     @ResponsePayload
     public GetHotelResponse removeAmenitiesToHotel(@RequestPayload RemoveAmenitiesFromHotelRequest request) {
-        throw new UnsupportedOperationException("NOT IMPLEMENTED");
+        List<Long> amenityIds = request.getAmenityIds();
+        validateAndGetAmenities(amenityIds);
+
+        Long hotelId = request.getHotelId();
+        Hotel hotel = hotelService.removeAmenitiesFromHotel(hotelId, amenityIds);
+
+        GetHotelResponse response = new GetHotelResponse();
+        response.setHotel(toHotelInfo(hotel));
+        return response;
+    }
+
+    private List<Amenity> validateAndGetAmenities(List<Long> amenityIds){
+        List<Amenity> amenities = amenityService.getAmenities(amenityIds);
+
+        // Number of passed in amenity ids must match number of fetched amenities.
+        if (amenities.size() != amenityIds.size()) {
+            throw new SenderException(String.format("Unable to add amenities to hotel due to non-existing amenities %s", amenityIds));
+        }
+        return amenities;
     }
 }

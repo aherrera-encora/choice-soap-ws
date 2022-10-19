@@ -73,6 +73,7 @@
                 <xs:element name="zipCode" type="xs:string"/>
                 <xs:element name="address" type="xs:string"/>
                 <xs:element name="rating" type="xs:decimal"/>
+                <xs:element name="amenityIds" type="xs:long" minOccurs="0" maxOccurs="unbounded"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>

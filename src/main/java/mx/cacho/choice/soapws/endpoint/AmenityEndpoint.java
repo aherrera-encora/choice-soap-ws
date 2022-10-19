@@ -1,13 +1,14 @@
 package mx.cacho.choice.soapws.endpoint;
 
+import lombok.extern.slf4j.Slf4j;
+import mx.cacho.choice.soapws.endpoint.exception.AmenityNotFoundException;
 import mx.cacho.choice.soapws.entity.Amenity;
-import mx.cacho.choice.soapws.schema.AmenityInfo;
 import mx.cacho.choice.soapws.schema.CreateAmenityRequest;
 import mx.cacho.choice.soapws.schema.GetAmenitiesResponse;
 import mx.cacho.choice.soapws.schema.GetAmenityRequest;
 import mx.cacho.choice.soapws.schema.GetAmenityResponse;
 import mx.cacho.choice.soapws.service.AmenityService;
-import org.springframework.beans.BeanUtils;
+import mx.cacho.choice.soapws.util.AmenityMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
@@ -18,6 +19,7 @@ import java.util.List;
 
 import static mx.cacho.choice.soapws.util.AmenityMapper.toAmenityInfo;
 
+@Slf4j
 @Endpoint
 public class AmenityEndpoint {
     private static final String NAMESPACE_URI = "http://choice.cacho.mx/soap-ws/hotels";
@@ -31,12 +33,13 @@ public class AmenityEndpoint {
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "getAmenityRequest")
     @ResponsePayload
     public GetAmenityResponse getAmenity(@RequestPayload GetAmenityRequest request) {
-        return amenityService.getAmenity(request.getId())
-                .map(h -> {
-                    GetAmenityResponse response = new GetAmenityResponse();
-                    response.setAmenity(toAmenityInfo().apply(h));
-                    return response;
-                }).orElse(null); //TODO
+        Long amenityId = request.getId();
+        Amenity amenity = amenityService.getAmenity(amenityId).orElseThrow(() -> new AmenityNotFoundException(String.format("Amenity not found: %s", amenityId)));
+
+        GetAmenityResponse response = new GetAmenityResponse();
+        response.setAmenity(toAmenityInfo(amenity));
+        log.debug("Returning amenity: {}", amenity);
+        return response;
     }
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "getAllAmenitiesRequest")
@@ -44,15 +47,9 @@ public class AmenityEndpoint {
     public GetAmenitiesResponse getAllAmenities() {
         List<Amenity> amenities = amenityService.getAllAmenities();
 
-        List<AmenityInfo> amenityInfoList = amenities.stream().map(amenity -> {
-            AmenityInfo amenityInfo = new AmenityInfo();
-            BeanUtils.copyProperties(amenity, amenityInfo);
-            return amenityInfo;
-        }).toList();
-
         GetAmenitiesResponse response = new GetAmenitiesResponse();
-        response.getAmenity().addAll(amenityInfoList);
-
+        response.getAmenity().addAll(amenities.stream().map(AmenityMapper::toAmenityInfo).toList());
+        log.debug("Returning amenities #: {}", amenities.size());
         return response;
     }
 
@@ -63,14 +60,11 @@ public class AmenityEndpoint {
                 .name(request.getName())
                 .description(request.getDescription())
                 .build();
-
-        AmenityInfo amenityInfo = new AmenityInfo();
-        if (amenityService.createAmenity(amenity)) {
-            BeanUtils.copyProperties(amenity, amenityInfo);
-        }
+        amenity = amenityService.createAmenity(amenity);
 
         GetAmenityResponse response = new GetAmenityResponse();
-        response.setAmenity(amenityInfo);
+        response.setAmenity(toAmenityInfo(amenity));
+        log.debug("Created amenity: {}", amenity);
         return response;
     }
 }
