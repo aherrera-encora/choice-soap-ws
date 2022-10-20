@@ -1,7 +1,6 @@
 package mx.cacho.choice.soapws.endpoint;
 
 import lombok.extern.slf4j.Slf4j;
-import mx.cacho.choice.soapws.endpoint.exception.AmenityNotFoundException;
 import mx.cacho.choice.soapws.endpoint.exception.HotelNotFoundException;
 import mx.cacho.choice.soapws.endpoint.exception.SenderException;
 import mx.cacho.choice.soapws.entity.Amenity;
@@ -9,7 +8,6 @@ import mx.cacho.choice.soapws.entity.Hotel;
 import mx.cacho.choice.soapws.schema.AddAmenitiesToHotelRequest;
 import mx.cacho.choice.soapws.schema.CreateHotelRequest;
 import mx.cacho.choice.soapws.schema.DeleteHotelRequest;
-import mx.cacho.choice.soapws.schema.GetAmenityResponse;
 import mx.cacho.choice.soapws.schema.GetHotelRequest;
 import mx.cacho.choice.soapws.schema.GetHotelResponse;
 import mx.cacho.choice.soapws.schema.GetHotelsByNameRequest;
@@ -30,7 +28,6 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 import java.util.HashSet;
 import java.util.List;
 
-import static mx.cacho.choice.soapws.util.AmenityMapper.toAmenityInfo;
 import static mx.cacho.choice.soapws.util.HotelMapper.toHotelInfo;
 
 @Slf4j
@@ -171,7 +168,7 @@ public class HotelEndpoint {
         return response;
     }
 
-    private List<Amenity> validateAndGetAmenities(List<Long> amenityIds){
+    private List<Amenity> validateAndGetAmenities(List<Long> amenityIds) {
         List<Amenity> amenities = amenityService.getAmenities(amenityIds);
 
         // Number of passed in amenity ids must match number of fetched amenities.

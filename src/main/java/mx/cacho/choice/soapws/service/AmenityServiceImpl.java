@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import mx.cacho.choice.soapws.entity.Amenity;
 import mx.cacho.choice.soapws.repository.AmenityRepository;
 import mx.cacho.choice.soapws.service.exception.IllegalServiceOperationException;
-import mx.cacho.choice.soapws.service.exception.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

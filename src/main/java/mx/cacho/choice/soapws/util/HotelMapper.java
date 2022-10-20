@@ -5,7 +5,6 @@ import mx.cacho.choice.soapws.schema.HotelInfo;
 import org.springframework.beans.BeanUtils;
 
 import java.util.HashSet;
-import java.util.function.Function;
 
 public class HotelMapper {
 

@@ -18,6 +18,7 @@ import org.springframework.ws.wsdl.wsdl11.DefaultWsdl11Definition;
 import org.springframework.xml.xsd.SimpleXsdSchema;
 import org.springframework.xml.xsd.XsdSchema;
 
+import javax.validation.ConstraintViolationException;
 import java.util.Properties;
 
 @Configuration
@@ -56,7 +57,7 @@ public class ChoiceWebServiceConfig extends WsConfigurerAdapter {
         //Configure default Fault with generic Server Error fault string
         SoapFaultDefinition defaultFaultDefinition = new SoapFaultDefinition();
         defaultFaultDefinition.setFaultCode(SoapFaultDefinition.RECEIVER);
-        defaultFaultDefinition.setFaultStringOrReason("Unexpected Server Error");
+        defaultFaultDefinition.setFaultStringOrReason(UNEXPECTED_SERVER_ERROR);
         exceptionResolver.setDefaultFault(defaultFaultDefinition);
 
         Properties errorMappings = new Properties();
@@ -68,6 +69,7 @@ public class ChoiceWebServiceConfig extends WsConfigurerAdapter {
         errorMappings.setProperty(ServiceException.class.getName(), SoapFaultDefinition.RECEIVER.toString());
         errorMappings.setProperty(IllegalServiceOperationException.class.getName(), SoapFaultDefinition.RECEIVER.toString());
         errorMappings.setProperty(IllegalServiceArgumentException.class.getName(), SoapFaultDefinition.SENDER.toString());
+        errorMappings.setProperty(ConstraintViolationException.class.getName(), SoapFaultDefinition.SENDER.toString());
 
         exceptionResolver.setExceptionMappings(errorMappings);
         exceptionResolver.setOrder(1);
