@@ -1,5 +1,7 @@
 debug: true
 spring:
+  flyway:
+    enabled: false
   datasource:
     driverClassName: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/postgres
