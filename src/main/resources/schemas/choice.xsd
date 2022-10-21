@@ -11,9 +11,17 @@
         </xs:complexType>
     </xs:element>
 
-    <!-- Fetches all Hotels. TODO: Pagination-->
+    <!-- Fetches all Hotels. -->
     <xs:element name="getAllHotelsRequest">
         <xs:complexType/>
+    </xs:element>
+
+    <xs:element name="getAllHotelsPaginatedRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="pagination" type="tns:pagination"/>
+            </xs:sequence>
+        </xs:complexType>
     </xs:element>
 
     <!-- Searches Hotels by name -->
@@ -21,6 +29,7 @@
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="name" type="xs:string"/>
+                <!--<xs:element name="pagination" type="tns:pagination" minOccurs="0"/>-->
             </xs:sequence>
         </xs:complexType>
     </xs:element>
@@ -39,6 +48,7 @@
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="hotel" type="tns:hotelInfo" maxOccurs="unbounded"/>
+                <xs:element name="pageInfo" type="tns:pageInfo" minOccurs="0"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
@@ -116,7 +126,7 @@
         </xs:complexType>
     </xs:element>
 
-    <!-- Fetches all Amenities. TODO: Pagination-->
+    <!-- Fetches all Amenities. -->
     <xs:element name="getAllAmenitiesRequest">
         <xs:complexType/>
     </xs:element>
@@ -170,6 +180,19 @@
             <xs:element name="amenityId" type="xs:long"/>
             <xs:element name="name" type="xs:string"/>
             <xs:element name="description" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="pagination">
+        <xs:sequence>
+            <xs:element name="pageNumber" type="xs:int"/>
+            <xs:element name="pageSize" type="xs:int"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="pageInfo">
+        <xs:sequence>
+            <xs:element name="totalElements" type="xs:long"/>
+            <xs:element name="totalPages" type="xs:int"/>
         </xs:sequence>
     </xs:complexType>
 </xs:schema>

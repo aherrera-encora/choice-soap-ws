@@ -8,17 +8,21 @@ import mx.cacho.choice.soapws.entity.Hotel;
 import mx.cacho.choice.soapws.schema.AddAmenitiesToHotelRequest;
 import mx.cacho.choice.soapws.schema.CreateHotelRequest;
 import mx.cacho.choice.soapws.schema.DeleteHotelRequest;
+import mx.cacho.choice.soapws.schema.GetAllHotelsPaginatedRequest;
 import mx.cacho.choice.soapws.schema.GetHotelRequest;
 import mx.cacho.choice.soapws.schema.GetHotelResponse;
 import mx.cacho.choice.soapws.schema.GetHotelsByNameRequest;
 import mx.cacho.choice.soapws.schema.GetHotelsResponse;
 import mx.cacho.choice.soapws.schema.HotelInfo;
+import mx.cacho.choice.soapws.schema.PageInfo;
+import mx.cacho.choice.soapws.schema.Pagination;
 import mx.cacho.choice.soapws.schema.RemoveAmenitiesFromHotelRequest;
 import mx.cacho.choice.soapws.schema.UpdateHotelRequest;
 import mx.cacho.choice.soapws.service.AmenityService;
 import mx.cacho.choice.soapws.service.HotelService;
 import mx.cacho.choice.soapws.util.HotelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
@@ -65,6 +69,31 @@ public class HotelEndpoint {
         GetHotelsResponse response = new GetHotelsResponse();
         response.getHotel().addAll(hotelInfoList);
         log.debug("Returning hotels #: {}", hotels.size());
+        return response;
+    }
+
+    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "getAllHotelsPaginatedRequest")
+    @ResponsePayload
+    public GetHotelsResponse getAllHotels(@RequestPayload GetAllHotelsPaginatedRequest request) {
+
+        Pagination pagination = request.getPagination();
+        final int pageNumber = pagination.getPageNumber();
+        final int pageSize = pagination.getPageSize();
+
+        if(pageNumber < 1 || pageSize < 1){
+            throw new SenderException("Pagination parameters must be positive numbers.");
+        }
+
+        Page<Hotel> hotelPage = hotelService.getAllHotels(pageNumber, pageSize);
+        PageInfo pageInfo = new PageInfo();
+        pageInfo.setTotalPages(hotelPage.getTotalPages());
+        pageInfo.setTotalElements(hotelPage.getTotalElements());
+        List<HotelInfo> hotelInfoList = hotelPage.toList().stream().map(HotelMapper::toHotelInfo).toList();
+
+        GetHotelsResponse response = new GetHotelsResponse();
+        response.getHotel().addAll(hotelInfoList);
+        response.setPageInfo(pageInfo);
+        log.debug("Returning hotels #: {}, out of a total of #: {}", hotelInfoList.size(), pageInfo.getTotalElements());
         return response;
     }
 

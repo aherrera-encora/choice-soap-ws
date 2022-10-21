@@ -7,6 +7,9 @@ import mx.cacho.choice.soapws.repository.AmenityRepository;
 import mx.cacho.choice.soapws.repository.HotelRepository;
 import mx.cacho.choice.soapws.service.exception.IllegalServiceOperationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -39,6 +42,12 @@ public class HotelServiceImpl implements HotelService {
     @Override
     public List<Hotel> getAllHotels() {
         return hotelRepository.findAll();
+    }
+
+    @Override
+    public Page<Hotel> getAllHotels(int pageNumber, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        return hotelRepository.findAll(pageable);
     }
 
     @Override

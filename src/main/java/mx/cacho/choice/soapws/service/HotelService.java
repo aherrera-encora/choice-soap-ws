@@ -2,6 +2,7 @@ package mx.cacho.choice.soapws.service;
 
 import mx.cacho.choice.soapws.entity.Amenity;
 import mx.cacho.choice.soapws.entity.Hotel;
+import org.springframework.data.domain.Page;
 
 import java.util.Collection;
 import java.util.List;
@@ -14,6 +15,8 @@ public interface HotelService {
     List<Hotel> getHotels(Collection<Long> hotelIds);
 
     List<Hotel> getAllHotels();
+
+    Page<Hotel> getAllHotels(int pageNumber, int pageSize);
 
     List<Hotel> getHotelsByName(String namePattern);
 
