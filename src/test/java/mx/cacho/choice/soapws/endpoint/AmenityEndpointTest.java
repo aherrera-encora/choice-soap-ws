@@ -7,7 +7,7 @@ import mx.cacho.choice.soapws.schema.CreateAmenityRequest;
 import mx.cacho.choice.soapws.schema.GetAmenitiesResponse;
 import mx.cacho.choice.soapws.schema.GetAmenityRequest;
 import mx.cacho.choice.soapws.schema.GetAmenityResponse;
-import mx.cacho.choice.soapws.service.AmenityService;
+import mx.cacho.choice.soapws.service.AmenityServiceImpl;
 import mx.cacho.choice.soapws.test.util.TestUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.junit.jupiter.api.AfterEach;
@@ -16,10 +16,9 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.function.Executable;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.webservices.server.WebServiceServerTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.List;
 import java.util.Optional;
@@ -35,15 +34,17 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+/**
+ * Unit Tests; with no spring boot configuration.
+ */
 @ExtendWith(MockitoExtension.class)
-@WebServiceServerTest(endpoints = AmenityEndpoint.class)
 class AmenityEndpointTest {
 
-    @Autowired
+    @InjectMocks
     AmenityEndpoint amenityEndpoint;
 
-    @MockBean
-    AmenityService amenityServiceMock;
+    @Mock
+    AmenityServiceImpl amenityServiceMock;
 
     @BeforeEach
     void setUp() {
@@ -56,7 +57,7 @@ class AmenityEndpointTest {
     @Nested
     class GetAmenity {
         @Test
-        void returnsResponseWithAmenity_whenUsingRequestWithExistingId() {
+        void returnsResponseWithAmenityInfo_whenUsingRequestWithExistingAmenityId() {
             //given
             Long id = nextLong(1, Long.MAX_VALUE);
             String name = randomAlphanumeric(50);
@@ -71,15 +72,17 @@ class AmenityEndpointTest {
             GetAmenityResponse response = amenityEndpoint.getAmenity(request);
 
             //then
-            assertEquals(id, response.getAmenity().getAmenityId());
-            assertEquals(name, response.getAmenity().getName());
-            assertEquals(description, response.getAmenity().getDescription());
+            AmenityInfo expectedAmenityInfo = new AmenityInfo();
+            expectedAmenityInfo.setAmenityId(id);
+            expectedAmenityInfo.setName(name);
+            expectedAmenityInfo.setDescription(description);
+            assertTrue(EqualsBuilder.reflectionEquals(expectedAmenityInfo, response.getAmenity()));
             verify(amenityServiceMock, times(1)).getAmenity(id);
             verifyNoMoreInteractions(amenityServiceMock);
         }
 
         @Test
-        void throws_whenUsingRequestWithNonExistingId() {
+        void throws_whenUsingRequestWithNonExistingAmenityId() {
             //given
             Long id = nextLong(1, Long.MAX_VALUE);
             when(amenityServiceMock.getAmenity(id))
@@ -100,11 +103,8 @@ class AmenityEndpointTest {
     @Nested
     class GetAllAmenities {
         @Test
-        void returnsResponseWithAmenities_whenUsingRequestWithExistingIds() {
-            List<Long> existingIds = List.of(
-                    nextLong(1, Long.MAX_VALUE),
-                    nextLong(1, Long.MAX_VALUE),
-                    nextLong(1, Long.MAX_VALUE));
+        void returnsResponseWithAmenityInfos_whenUsingRequestWithExistingAmenityIds() {
+            List<Long> existingIds = List.of(nextLong(1, Long.MAX_VALUE), nextLong(1, Long.MAX_VALUE), nextLong(1, Long.MAX_VALUE));
             List<Amenity> existingAmenities = existingIds.stream()
                     .map(TestUtils::generateAmenity)
                     .toList();
@@ -122,8 +122,9 @@ class AmenityEndpointTest {
                 ai.setName(a.getName());
                 return ai;
             }).toList();
+
             assertEquals(3, response.getAmenity().size());
-            for (int i = 0; i < amenityInfoList.size(); i++) {
+            for (int i = 0; i < response.getAmenity().size(); i++) {
                 assertTrue(EqualsBuilder.reflectionEquals(amenityInfoList.get(i), response.getAmenity().get(i)));
             }
             verify(amenityServiceMock, times(1)).getAllAmenities();
@@ -134,13 +135,16 @@ class AmenityEndpointTest {
     @Nested
     class CreateAmenity {
         @Test
-        void createsAmenity_whenUsingRequestWithValidAmenity() {
+        void returnsResponseWithAmenityInfo_whenUsingRequestWithNewAmenity() {
             //given
             String name = randomAlphanumeric(50);
             String description = randomAlphanumeric(50);
             Amenity newAmenity = generateAmenity(0L, name, description);
+
+            Long createdAmenityId = nextLong(1, Long.MAX_VALUE);
+            Amenity createdAmenity = generateAmenity(createdAmenityId, name, description);
             when(amenityServiceMock.createAmenity(newAmenity))
-                    .thenReturn(generateAmenity(nextLong(1, Long.MAX_VALUE), name, description));
+                    .thenReturn(createdAmenity);
 
             CreateAmenityRequest request = new CreateAmenityRequest();
             request.setName(name);
@@ -150,8 +154,11 @@ class AmenityEndpointTest {
             GetAmenityResponse response = amenityEndpoint.createAmenity(request);
 
             //then
-            assertEquals(name, response.getAmenity().getName());
-            assertEquals(description, response.getAmenity().getDescription());
+            AmenityInfo expectedAmenityInfo = new AmenityInfo();
+            expectedAmenityInfo.setAmenityId(createdAmenityId);
+            expectedAmenityInfo.setName(name);
+            expectedAmenityInfo.setDescription(description);
+            assertTrue(EqualsBuilder.reflectionEquals(expectedAmenityInfo, response.getAmenity()));
         }
     }
 }

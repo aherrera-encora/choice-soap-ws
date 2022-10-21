@@ -47,7 +47,7 @@ public class HotelServiceImpl implements HotelService {
     }
 
     @Override
-    public Hotel createHotel(Hotel hotel) {
+    public Hotel createHotel(Hotel hotel) throws IllegalServiceOperationException {
         if (hotel.getHotelId() != 0) {
             log.warn("Attempted to create a hotel with id: {}.", hotel);
             throw new IllegalServiceOperationException("Unable to create hotel with pre-populated id.");
@@ -61,7 +61,7 @@ public class HotelServiceImpl implements HotelService {
     }
 
     @Override
-    public Hotel updateHotel(Hotel hotel) {
+    public Hotel updateHotel(Hotel hotel) throws IllegalServiceOperationException {
         if (hotelRepository.existsById(hotel.getHotelId())) {
             return hotelRepository.save(hotel);
         } else {
@@ -71,7 +71,7 @@ public class HotelServiceImpl implements HotelService {
     }
 
     @Override
-    public Hotel addAmenitiesToHotel(Long hotelId, Collection<Amenity> amenities) {
+    public Hotel addAmenitiesToHotel(Long hotelId, Collection<Amenity> amenities) throws IllegalServiceOperationException {
         Optional<Hotel> hotelOptional = hotelRepository.findById(hotelId);
         if (hotelOptional.isEmpty()) {
             log.warn("Attempted to add amenities to non-existing hotel id: {}.", hotelId);
@@ -84,7 +84,7 @@ public class HotelServiceImpl implements HotelService {
     }
 
     @Override
-    public Hotel removeAmenitiesFromHotel(Long hotelId, Collection<Long> amenityIds) {
+    public Hotel removeAmenitiesFromHotel(Long hotelId, Collection<Long> amenityIds) throws IllegalServiceOperationException {
         Optional<Hotel> hotelOptional = hotelRepository.findById(hotelId);
 
         if (hotelOptional.isEmpty()) {

@@ -37,7 +37,7 @@ public class AmenityServiceImpl implements AmenityService {
     }
 
     @Override
-    public Amenity createAmenity(Amenity amenity) {
+    public Amenity createAmenity(Amenity amenity) throws IllegalServiceOperationException {
         if (amenity.getAmenityId() != 0) {
             log.warn("Attempted to create an amenity with id: {}.", amenity);
             throw new IllegalServiceOperationException("Unable to create amenity with pre-populated id.");

@@ -10,14 +10,10 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.function.Executable;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ContextConfiguration;
 
-import javax.validation.ConstraintViolationException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -34,15 +30,17 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-@ContextConfiguration(classes = ValidationAutoConfiguration.class)
-@SpringBootTest(classes = AmenityServiceImpl.class)
+/**
+ * Unit Tests; with no spring boot configuration.
+ * TODO: Use integration tests to verify Validation configuration.
+ */
 @ExtendWith(MockitoExtension.class)
 class AmenityServiceImplTest {
 
-    @Autowired
-    private AmenityService amenityService;
+    @InjectMocks
+    private AmenityServiceImpl amenityService;
 
-    @MockBean
+    @Mock
     private AmenityRepository amenityRepositoryMock;
 
     @BeforeEach
@@ -194,20 +192,6 @@ class AmenityServiceImplTest {
             assertEquals(name, createdAmenity.getName());
             assertEquals(description, createdAmenity.getDescription());
             verify(amenityRepositoryMock, times(1)).save(newAmenity);
-            verifyNoMoreInteractions(amenityRepositoryMock);
-        }
-
-        @Test
-        void throws_whenUsingInvalidAmenity() {
-            //given
-            String name = randomAlphanumeric(500); //length larger than max 200
-            Amenity newAmenity = generateAmenity(0L, name, "");
-
-            //when
-            Executable serviceCall = () -> amenityService.createAmenity(newAmenity);
-
-            //then should throw a ConstraintViolationException
-            assertThrows(ConstraintViolationException.class, serviceCall);
             verifyNoMoreInteractions(amenityRepositoryMock);
         }
 
