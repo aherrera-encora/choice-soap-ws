@@ -9,10 +9,12 @@ import mx.cacho.choice.soapws.schema.AddAmenitiesToHotelRequest;
 import mx.cacho.choice.soapws.schema.CreateHotelRequest;
 import mx.cacho.choice.soapws.schema.DeleteHotelRequest;
 import mx.cacho.choice.soapws.schema.GetAllHotelsPaginatedRequest;
+import mx.cacho.choice.soapws.schema.GetAllHotelsPaginatedResponse;
 import mx.cacho.choice.soapws.schema.GetHotelRequest;
 import mx.cacho.choice.soapws.schema.GetHotelResponse;
 import mx.cacho.choice.soapws.schema.GetHotelsByNameRequest;
-import mx.cacho.choice.soapws.schema.GetHotelsResponse;
+import mx.cacho.choice.soapws.schema.GetAllHotelsResponse;
+import mx.cacho.choice.soapws.schema.GetHotelsByNameResponse;
 import mx.cacho.choice.soapws.schema.HotelInfo;
 import mx.cacho.choice.soapws.schema.PageInfo;
 import mx.cacho.choice.soapws.schema.Pagination;
@@ -62,11 +64,11 @@ public class HotelEndpoint {
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "getAllHotelsRequest")
     @ResponsePayload
-    public GetHotelsResponse getAllHotels() {
+    public GetAllHotelsResponse getAllHotels() {
         List<Hotel> hotels = hotelService.getAllHotels();
         List<HotelInfo> hotelInfoList = hotels.stream().map(HotelMapper::toHotelInfo).toList();
 
-        GetHotelsResponse response = new GetHotelsResponse();
+        GetAllHotelsResponse response = new GetAllHotelsResponse();
         response.getHotel().addAll(hotelInfoList);
         log.debug("Returning hotels #: {}", hotels.size());
         return response;
@@ -74,7 +76,7 @@ public class HotelEndpoint {
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "getAllHotelsPaginatedRequest")
     @ResponsePayload
-    public GetHotelsResponse getAllHotels(@RequestPayload GetAllHotelsPaginatedRequest request) {
+    public GetAllHotelsPaginatedResponse getAllHotels(@RequestPayload GetAllHotelsPaginatedRequest request) {
 
         Pagination pagination = request.getPagination();
         final int pageNumber = pagination.getPageNumber();
@@ -90,7 +92,7 @@ public class HotelEndpoint {
         pageInfo.setTotalElements(hotelPage.getTotalElements());
         List<HotelInfo> hotelInfoList = hotelPage.toList().stream().map(HotelMapper::toHotelInfo).toList();
 
-        GetHotelsResponse response = new GetHotelsResponse();
+        GetAllHotelsPaginatedResponse response = new GetAllHotelsPaginatedResponse();
         response.getHotel().addAll(hotelInfoList);
         response.setPageInfo(pageInfo);
         log.debug("Returning hotels #: {}, out of a total of #: {}", hotelInfoList.size(), pageInfo.getTotalElements());
@@ -99,11 +101,11 @@ public class HotelEndpoint {
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "getHotelsByNameRequest")
     @ResponsePayload
-    public GetHotelsResponse getHotelsByName(@RequestPayload GetHotelsByNameRequest request) {
+    public GetHotelsByNameResponse getHotelsByName(@RequestPayload GetHotelsByNameRequest request) {
         List<Hotel> hotels = hotelService.getHotelsByName(request.getName());
         List<HotelInfo> hotelInfoList = hotels.stream().map(HotelMapper::toHotelInfo).toList();
 
-        GetHotelsResponse response = new GetHotelsResponse();
+        GetHotelsByNameResponse response = new GetHotelsByNameResponse();
         response.getHotel().addAll(hotelInfoList);
         log.debug("Returning hotels #: {}", hotels.size());
         return response;

@@ -4,7 +4,6 @@ import mx.cacho.choice.soapws.endpoint.exception.AmenityNotFoundException;
 import mx.cacho.choice.soapws.entity.Amenity;
 import mx.cacho.choice.soapws.schema.AmenityInfo;
 import mx.cacho.choice.soapws.schema.CreateAmenityRequest;
-import mx.cacho.choice.soapws.schema.GetAmenitiesResponse;
 import mx.cacho.choice.soapws.schema.GetAmenityRequest;
 import mx.cacho.choice.soapws.schema.GetAmenityResponse;
 import mx.cacho.choice.soapws.service.AmenityServiceImpl;
@@ -112,7 +111,7 @@ class AmenityEndpointTest {
                     .thenReturn(existingAmenities);
 
             //when
-            GetAmenitiesResponse response = amenityEndpoint.getAllAmenities();
+            var response = amenityEndpoint.getAllAmenities();
 
             //then
             List<AmenityInfo> amenityInfoList = existingAmenities.stream().map(a -> {

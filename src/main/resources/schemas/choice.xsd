@@ -10,10 +10,24 @@
             </xs:sequence>
         </xs:complexType>
     </xs:element>
+    <xs:element name="getHotelResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="hotel" type="tns:hotelInfo"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
 
     <!-- Fetches all Hotels. -->
     <xs:element name="getAllHotelsRequest">
         <xs:complexType/>
+    </xs:element>
+    <xs:element name="getAllHotelsResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="hotel" type="tns:hotelInfo" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
     </xs:element>
 
     <xs:element name="getAllHotelsPaginatedRequest">
@@ -23,32 +37,27 @@
             </xs:sequence>
         </xs:complexType>
     </xs:element>
+    <xs:element name="getAllHotelsPaginatedResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="hotel" type="tns:hotelInfo" maxOccurs="unbounded"/>
+                <xs:element name="pageInfo" type="tns:pageInfo" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
 
     <!-- Searches Hotels by name -->
     <xs:element name="getHotelsByNameRequest">
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="name" type="xs:string"/>
-                <!--<xs:element name="pagination" type="tns:pagination" minOccurs="0"/>-->
             </xs:sequence>
         </xs:complexType>
     </xs:element>
-
-    <!-- Single Hotel Response -->
-    <xs:element name="getHotelResponse">
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element name="hotel" type="tns:hotelInfo"/>
-            </xs:sequence>
-        </xs:complexType>
-    </xs:element>
-
-    <!-- Multi Hotel Response -->
-    <xs:element name="getHotelsResponse">
+    <xs:element name="getHotelsByNameResponse">
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="hotel" type="tns:hotelInfo" maxOccurs="unbounded"/>
-                <xs:element name="pageInfo" type="tns:pageInfo" minOccurs="0"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
@@ -69,6 +78,13 @@
             </xs:sequence>
         </xs:complexType>
     </xs:element>
+    <xs:element name="createHotelResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="hotel" type="tns:hotelInfo"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
 
     <!-- Update a Hotel -->
     <xs:element name="updateHotelRequest">
@@ -84,6 +100,13 @@
                 <xs:element name="address" type="xs:string"/>
                 <xs:element name="rating" type="xs:decimal"/>
                 <xs:element name="amenityIds" type="xs:long" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="updateHotelResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="hotel" type="tns:hotelInfo"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
@@ -106,6 +129,13 @@
             </xs:sequence>
         </xs:complexType>
     </xs:element>
+    <xs:element name="addAmenitiesToHotelResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="hotel" type="tns:hotelInfo"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
 
     <!-- Removes an Amenity from a Hotel -->
     <xs:element name="removeAmenitiesFromHotelRequest">
@@ -113,6 +143,13 @@
             <xs:sequence>
                 <xs:element name="hotelId" type="xs:long"/>
                 <xs:element name="amenityIds" type="xs:long" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="removeAmenitiesFromHotelResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="hotel" type="tns:hotelInfo"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
@@ -125,13 +162,6 @@
             </xs:sequence>
         </xs:complexType>
     </xs:element>
-
-    <!-- Fetches all Amenities. -->
-    <xs:element name="getAllAmenitiesRequest">
-        <xs:complexType/>
-    </xs:element>
-
-    <!-- Single Amenity Response -->
     <xs:element name="getAmenityResponse">
         <xs:complexType>
             <xs:sequence>
@@ -140,8 +170,11 @@
         </xs:complexType>
     </xs:element>
 
-    <!-- Multi Amenity Response-->
-    <xs:element name="getAmenitiesResponse">
+    <!-- Fetches all Amenities. -->
+    <xs:element name="getAllAmenitiesRequest">
+        <xs:complexType/>
+    </xs:element>
+    <xs:element name="getAllAmenitiesResponse">
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="amenity" type="tns:amenityInfo" maxOccurs="unbounded"/>
@@ -155,6 +188,13 @@
             <xs:sequence>
                 <xs:element name="name" type="xs:string"/>
                 <xs:element name="description" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="createAmenityResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="amenity" type="tns:amenityInfo"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>

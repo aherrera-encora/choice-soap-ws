@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import mx.cacho.choice.soapws.endpoint.exception.AmenityNotFoundException;
 import mx.cacho.choice.soapws.entity.Amenity;
 import mx.cacho.choice.soapws.schema.CreateAmenityRequest;
-import mx.cacho.choice.soapws.schema.GetAmenitiesResponse;
+import mx.cacho.choice.soapws.schema.GetAllAmenitiesResponse;
 import mx.cacho.choice.soapws.schema.GetAmenityRequest;
 import mx.cacho.choice.soapws.schema.GetAmenityResponse;
 import mx.cacho.choice.soapws.service.AmenityService;
@@ -44,10 +44,10 @@ public class AmenityEndpoint {
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "getAllAmenitiesRequest")
     @ResponsePayload
-    public GetAmenitiesResponse getAllAmenities() {
+    public GetAllAmenitiesResponse getAllAmenities() {
         List<Amenity> amenities = amenityService.getAllAmenities();
 
-        GetAmenitiesResponse response = new GetAmenitiesResponse();
+        GetAllAmenitiesResponse response = new GetAllAmenitiesResponse();
         response.getAmenity().addAll(amenities.stream().map(AmenityMapper::toAmenityInfo).toList());
         log.debug("Returning amenities #: {}", amenities.size());
         return response;

@@ -11,7 +11,6 @@ import mx.cacho.choice.soapws.schema.DeleteHotelRequest;
 import mx.cacho.choice.soapws.schema.GetHotelRequest;
 import mx.cacho.choice.soapws.schema.GetHotelResponse;
 import mx.cacho.choice.soapws.schema.GetHotelsByNameRequest;
-import mx.cacho.choice.soapws.schema.GetHotelsResponse;
 import mx.cacho.choice.soapws.schema.HotelInfo;
 import mx.cacho.choice.soapws.schema.UpdateHotelRequest;
 import mx.cacho.choice.soapws.service.AmenityServiceImpl;
@@ -146,7 +145,7 @@ class HotelEndpointTest {
             when(hotelServiceMock.getAllHotels()).thenReturn(existingHotels);
 
             //when
-            GetHotelsResponse response = hotelEndpoint.getAllHotels();
+            var response = hotelEndpoint.getAllHotels();
 
             //then
             List<HotelInfo> hotelInfoList = existingHotels.stream().map(h -> {
@@ -184,7 +183,7 @@ class HotelEndpointTest {
             //when
             GetHotelsByNameRequest request = new GetHotelsByNameRequest();
             request.setName(nameSuffix);
-            GetHotelsResponse response = hotelEndpoint.getHotelsByName(request);
+            var response = hotelEndpoint.getHotelsByName(request);
 
             //then
             List<HotelInfo> hotelInfoList = existingHotels.stream().map(h -> {
